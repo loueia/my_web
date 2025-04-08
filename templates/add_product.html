@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% if product %}Edit{% else %}Add{% endif %} Product</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home">Sari-Sari Store</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/purchase">Purchase</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                </ul>
+                <a href="/logout" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h3>{% if product %}Edit{% else %}Add{% endif %} Product</h3>
+        <form method="POST">
+            <div class="mb-3">
+                <label>Product Number</label>
+                <input type="text" name="product_number" class="form-control" required value="{{ product.product_number if product }}">
+            </div>
+            <div class="mb-3">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" required value="{{ product.name if product }}">
+            </div>
+            <div class="mb-3">
+                <label>Price (₱)</label>
+                <input type="number" step="0.01" name="price" class="form-control" required value="{{ product.price if product }}">
+            </div>
+            <div class="mb-3">
+                <label>Stock</label>
+                <input type="number" name="stock" class="form-control" required value="{{ product.stock if product }}">
+            </div>
+            <button class="btn btn-primary">{% if product %}Update{% else %}Add{% endif %}</button>
+            <a href="/products" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

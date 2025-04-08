@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Products - Sari-Sari Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home">Sari-Sari Store</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/purchase">Purchase</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                </ul>
+                <a href="/logout" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h3>Product List</h3>
+        <a href="/add_product" class="btn btn-success mb-3">Add New Product</a>
+
+        <form action="/search" method="POST" class="mb-3 d-flex">
+            <input type="text" name="keyword" class="form-control me-2" placeholder="Search by name or number" required>
+            <button class="btn btn-primary">Search</button>
+        </form>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-info">{{ messages[0] }}</div>
+          {% endif %}
+        {% endwith %}
+
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Product Number</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.product_number }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>₱{{ product.price }}</td>
+                    <td>{{ product.stock }}</td>
+                    <td>
+                        <a href="/edit_product/{{ product.id }}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="/delete_product/{{ product.id }}" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!-- templates/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Home - Sari-Sari Store</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/home">Sari-Sari Store</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/products">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/purchase">Purchase</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/home">Home</a></li>
+                </ul>
+                <a href="/logout" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2>Welcome to your Sari-Sari Store Dashboard!</h2>
+        <p>Use the navigation bar to manage products, sales, and more.</p>
+
+        <!-- Sales Summary Graphs -->
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Daily Sales Summary</h4>
+                <canvas id="dailySalesChart" width="400" height="200"></canvas>
+            </div>
+            <div class="col-md-6">
+                <h4>Monthly Sales Summary</h4>
+                <canvas id="monthlySalesChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+
+        <!-- Product Stock Information -->
+        <h4 class="mt-5">Product Stock</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                    <tr>
+                        <td>{{ product[0] }}</td>
+                        <td>{{ product[1] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Daily Sales Chart Data
+        var dailySalesData = {
+            labels: {{ daily_dates|tojson }},
+            datasets: [{
+                label: 'Daily Sales (₱)',
+                data: {{ daily_values|tojson }},
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+                tension: 0.1
+            }]
+        };
+    
+        var dailyCtx = document.getElementById('dailySalesChart').getContext('2d');
+        var dailySalesChart = new Chart(dailyCtx, {
+            type: 'line',
+            data: dailySalesData,
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    
+        // Monthly Sales Chart Data
+        var monthlySalesData = {
+            labels: {{ monthly_dates|tojson }},
+            datasets: [{
+                label: 'Monthly Sales (₱)',
+                data: {{ monthly_values|tojson }},
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true,
+                tension: 0.1
+            }]
+        };
+    
+        var monthlyCtx = document.getElementById('monthlySalesChart').getContext('2d');
+        var monthlySalesChart = new Chart(monthlyCtx, {
+            type: 'line',
+            data: monthlySalesData,
+            options: {
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+    
+</body>
+</html>
+<!-- templates/home.html -->

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        input, button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .notification {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        }
+        .error {
+            background: #dc3545;
+        }
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 40%;
+            text-align: left;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="notification" id="notification">Product added successfully!</div>
+
+    <div class="container">
+        <h1>Grocery Cashier System</h1>
+
+        <h2>Add Product</h2>
+        <form id="addProductForm">
+            <input type="text" id="product_number" placeholder="Product Number" required>
+            <input type="text" id="name" placeholder="Product Name" required>
+            <input type="number" id="price" placeholder="Price" step="0.01" required>
+            <button type="submit">Add Product</button>
+        </form>
+
+        <h2>Search Product</h2>
+        <input type="text" id="search_product_number" placeholder="Enter Product Number">
+        <button onclick="searchProduct()">Search</button>
+    </div>
+
+    <!-- Modal -->
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Product Information</h2>
+            <p id="product_result">Loading...</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("addProductForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            let data = {
+                product_number: document.getElementById("product_number").value,
+                name: document.getElementById("name").value,
+                price: parseFloat(document.getElementById("price").value)
+            };
+
+            fetch("/add_product", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                let notification = document.getElementById("notification");
+
+                if (data.message) {
+                    notification.textContent = data.message;
+                    notification.classList.remove("error");
+                    notification.style.display = "block";
+                    
+                    setTimeout(() => {
+                        notification.style.display = "none";
+                    }, 3000);
+
+                    // Clear input fields
+                    document.getElementById("product_number").value = "";
+                    document.getElementById("name").value = "";
+                    document.getElementById("price").value = "";
+                } else {
+                    notification.textContent = data.error;
+                    notification.classList.add("error");
+                    notification.style.display = "block";
+
+                    setTimeout(() => {
+                        notification.style.display = "none";
+                    }, 3000);
+                }
+            });
+        });
+
+        function searchProduct() {
+            let productNumber = document.getElementById("search_product_number").value;
+            let modal = document.getElementById("resultModal");
+            let result = document.getElementById("product_result");
+
+            result.textContent = "Loading...";
+
+            fetch(`/search_product/${productNumber}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    result.innerHTML = `<span style="color:red;">${data.error}</span>`;
+                } else {
+                    result.innerHTML = `
+                        <strong>Product Number:</strong> ${data.product_number}<br>
+                        <strong>Name:</strong> ${data.name}<br>
+                        <strong>Price:</strong> ₱${data.price.toFixed(2)}
+                    `;
+                }
+                modal.style.display = "block";
+            });
+        }
+
+        function closeModal() {
+            document.getElementById("resultModal").style.display = "none";
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            let modal = document.getElementById("resultModal");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
